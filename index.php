@@ -1,12 +1,17 @@
 <?
-    require_once('functions.php');
-    $careerData = require_once('./data/career_data.php');
-    $profileData = require_once('./data/profile_data.php');
-    //    die(var_dump($careerData));
-    //getSortedArray($profileData['education']);
-    //die(var_dump(getSortedArray($profileData['education'])));
-    $educations = getSortedArray($profileData['education']);
-    $experiences = getSortedArray($careerData['experiences']);
+    $connection = new PDO('mysql:host=localhost; dbname=academy; charset=utf8', 'root', '');
+    $profile = $connection->query('SELECT * FROM `profile`');
+    $profile = $profile->fetchAll();
+
+    $education = $connection->query('SELECT * FROM `education` ORDER BY yearEnd DESC');
+    $languages = $connection->query('SELECT * FROM `languages`');
+    $interests = $connection->query('SELECT * FROM `interests`');
+    $about = $connection->query('SELECT * FROM `about`');
+    $about = $about->fetchAll();
+    $experience = $connection->query('SELECT * FROM `experience` ORDER BY yearEnd DESC');
+    $projects = $connection->query('SELECT * FROM `projects`');
+    $skills = $connection->query('SELECT * FROM `skills`');
+
 
 ?>
 <!DOCTYPE html>
@@ -42,15 +47,15 @@
     <div class="sidebar-wrapper">
         <div class="profile-container">
             <img class="profile" src="assets/images/photo1.jpg" alt="" />
-            <h1 class="name"><?=$profileData['about']['name']?></h1>
-            <h3 class="tagline"><?=$profileData['about']['post']?></h3>
+            <h1 class="name"><?=$profile[0]['name']?></h1>
+            <h3 class="tagline"><?=$profile[0]['post']?></h3>
         </div><!--//profile-container-->
 
         <div class="contact-container container-block">
             <ul class="list-unstyled contact-list">
-                <li class="email"><i class="fa fa-envelope"></i><a href="mailto: yourname@email.com"><?=$profileData['about']['email']?></a></li>
-                <li class="phone"><i class="fa fa-phone"></i><a href="tel:<?=$profileData['about']['phone']?>"><?=$profileData['about']['phone']?></a></li>
-                <li class="website"><i class="fa fa-globe"></i><a href="<?=$profileData['about']['site']?>" target="_blank"><?=$profileData['about']['site']?></a></li>
+                <li class="email"><i class="fa fa-envelope"></i><a href="mailto: <?=$profile[0]['email']?>"><?=$profile[0]['email']?></a></li>
+                <li class="phone"><i class="fa fa-phone"></i><a href="tel:<?=$profile[0]['phone']?>"><?=$profile[0]['phone']?></a></li>
+                <li class="website"><i class="fa fa-globe"></i><a href="<?=$profile[0]['site']?>" target="_blank"><?=$profile[0]['site']?></a></li>
 <!--                <li class="linkedin"><i class="fa fa-linkedin"></i><a href="#" target="_blank">linkedin.com/in/alandoe</a></li>-->
 <!--                <li class="github"><i class="fa fa-github"></i><a href="#" target="_blank">github.com/username</a></li>-->
 <!--                <li class="twitter"><i class="fa fa-twitter"></i><a href="https://twitter.com/3rdwave_themes" target="_blank">@twittername</a></li>-->
@@ -58,11 +63,11 @@
         </div><!--//contact-container-->
         <div class="education-container container-block">
             <h2 class="container-block-title">Образование</h2>
-            <? foreach($educations as $education): ?>
+            <? foreach($education as $educationItem): ?>
             <div class="item">
-                <h4 class="degree"><?=$education['speciality']?></h4>
-                <h5 class="meta"><?=$education['title']?></h5>
-                <div class="time"><?=$education['yearStart']?> - <?=$education['yearEnd']?> </div>
+                <h4 class="degree"><?=$educationItem['speciality']?></h4>
+                <h5 class="meta"><?=$educationItem['title']?></h5>
+                <div class="time"><?=$educationItem['yearStart']?> - <?=$educationItem['yearEnd']?> </div>
             </div><!--//item-->
             <? endforeach; ?>
         </div><!--//education-container-->
@@ -70,8 +75,8 @@
         <div class="languages-container container-block">
             <h2 class="container-block-title">Языки</h2>
             <ul class="list-unstyled interests-list">
-                <? foreach($profileData['languages'] as $language): ?>
-                    <li><?=$language['title']?> <span class="lang-desc">(<?=$language['level']?>)</span></li>
+                <? foreach($languages as $lang): ?>
+                    <li><?=$lang['title']?> <span class="lang-desc">(<?=$lang['level']?>)</span></li>
                 <? endforeach; ?>
             </ul>
         </div><!--//interests-->
@@ -79,8 +84,8 @@
         <div class="interests-container container-block">
             <h2 class="container-block-title">Интересы</h2>
             <ul class="list-unstyled interests-list">
-                <? foreach($profileData['interests'] as $interest): ?>
-                    <li><?=$interest?></li>
+                <? foreach($interests as $interest): ?>
+                    <li><?=$interest['title']?></li>
                 <? endforeach; ?>
             </ul>
         </div><!--//interests-->
@@ -92,23 +97,23 @@
         <section class="section summary-section">
             <h2 class="section-title"><i class="fa fa-user"></i>Обо мне</h2>
             <div class="summary">
-                <?=$careerData['about']?>
+                <?=$about[0]['title']?>
             </div><!--//summary-->
         </section><!--//section-->
 
         <section class="section experiences-section">
             <h2 class="section-title"><i class="fa fa-briefcase"></i>Опыт работы</h2>
-            <? foreach($experiences as $experience): ?>
+            <? foreach($experience as $exp): ?>
             <div class="item">
                 <div class="meta">
                     <div class="upper-row">
-                        <h3 class="job-title"><?=$experience['post']?></h3>
-                        <div class="time"><?=$experience['yearStart']?> - <?=$experience['yearEnd'] ?: 'По настоящее время'?></div>
+                        <h3 class="job-title"><?=$exp['post']?></h3>
+                        <div class="time"><?=$exp['yearStart']?> - <?=$exp['yearEnd'] ?: 'По настоящее время'?></div>
                     </div><!--//upper-row-->
-                    <div class="company"><?=$experience['company']?>, <?=$experience['city']?></div>
+                    <div class="company"><?=$exp['company']?>, <?=$exp['city']?></div>
                 </div><!--//meta-->
                 <div class="details">
-                    <?=$experience['about']?>
+                    <?=$exp['about']?>
                 </div><!--//details-->
             </div><!--//item-->
             <? endforeach; ?>
@@ -119,7 +124,7 @@
             <div class="intro">
                 <p>You can list your side projects or open source libraries in this section. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et ligula in nunc bibendum fringilla a eu lectus.</p>
             </div><!--//intro-->
-            <? foreach($careerData['projects'] as $project): ?>
+            <? foreach($projects as $project): ?>
             <div class="item">
                 <span class="project-title"><a href="//<?=$project['link']?>"><?=$project['title']?></a></span> - <span class="project-tagline"><?=$project['about']?></span>
             </div><!--//item-->
@@ -129,7 +134,7 @@
         <section class="skills-section section">
             <h2 class="section-title"><i class="fa fa-rocket"></i>Навыки</h2>
             <div class="skillset">
-                <? foreach ($careerData['skills'] as $skill): ?>
+                <? foreach ($skills as $skill): ?>
                 <div class="item">
                     <h3 class="level-title"><?=$skill['title']?></h3>
                     <div class="level-bar">
@@ -140,6 +145,27 @@
                 <? endforeach; ?>
             </div>
         </section><!--//skills-section-->
+
+        <form action="#" method="POST">
+            <textarea style="display: block; margin-left: auto; margin-right: auto; margin-top: 10px" name="comment" cols="30" rows="10" placeholder="Оставить отзыв"></textarea>
+            <button style="display: block; margin-left: auto; margin-right: auto; margin-top: 10px">Отправить отзыв</button>
+        </form>
+
+
+        <!--Если пользователь что-то отправил в форму, то делаем запись в БД.-->
+        <?
+            if ($_POST['comment']) {
+                $comment = $_POST['comment'];
+                $connection->query("INSERT INTO `comments` (`comment`) VALUES ('$comment')");
+            }
+            $commentsOfUsers = $connection->query('SELECT * FROM `comments`');
+            foreach ($commentsOfUsers as $key => $comment) {
+        ?>
+
+        <div style="font-size: 25px; margin: auto">
+            <?=($key + 1) . ' ' . $comment['comment']?>
+        </div>
+        <? } ?>
 
     </div><!--//main-body-->
 </div>
