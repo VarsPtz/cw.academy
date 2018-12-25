@@ -154,8 +154,17 @@
 
         <!--Если пользователь что-то отправил в форму, то делаем запись в БД.-->
         <?
+            function clean($value = "") {
+                $value = trim($value);
+                $value = stripslashes($value);
+                $value = strip_tags($value);
+                $value = htmlspecialchars($value);
+
+                return $value;
+            }
             if ($_POST['comment']) {
                 $comment = $_POST['comment'];
+                $comment = clean($comment);
                 $connection->query("INSERT INTO `comments` (`comment`) VALUES ('$comment')");
             }
             $commentsOfUsers = $connection->query('SELECT * FROM `comments`');
