@@ -165,7 +165,10 @@
             if ($_POST['comment']) {
                 $comment = $_POST['comment'];
                 $comment = clean($comment);
-                $connection->query("INSERT INTO `comments` (`comment`) VALUES ('$comment')");
+//                $connection->query("INSERT INTO `comments` (`comment`) VALUES ('$comment')");
+                $safe = $connection->prepare("INSERT INTO `comments` SET comment=:comment");
+                $arr = ['comment'=>$comment];
+                $safe->execute($arr);
             }
             $commentsOfUsers = $connection->query('SELECT * FROM `comments`');
             foreach ($commentsOfUsers as $key => $comment) {
